@@ -8,11 +8,6 @@
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>velodyne_driver</depend>
-  <depend>velodyne_pointcloud</depend>
-  <depend>urg_node</depend>
-  <depend>usb_cam</depend>
-
   <export>
 
   </export>

@@ -30,7 +30,6 @@
   <arg name="debug"            default = "false" />
   <arg name="diagnostics"      default = "true" />  
   <arg name="imu_frame_id"     default = "imu_link" />
-  <arg name="filter_frame_id"  default = "imu_link" />
   <arg name="imu_data_rate"    default = "300" />
   <arg name="filter_data_rate" default = "10" />
 
@@ -61,11 +60,10 @@
     </group> -->
 
     <group ns="velodyne_lower">
-      <include file="$(find sensing_launch)/launch/velodyne_VLP16.launch">
-        <arg name="sensor_frame" default="$(arg velodyne_lower_frame_id)" />
+      <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch">
+        <arg name="frame_id" default="$(arg velodyne_lower_frame_id)" />
         <arg name="device_ip" value="$(arg velodyne_lower_device_ip)" />
         <arg name="port" value="$(arg velodyne_lower_port)" />
-        <arg name="launch_driver" value="$(arg launch_driver)" />
       </include>
     </group>
 
@@ -133,7 +131,6 @@
           <arg name="debug" value="$(arg debug)" />
           <arg name="diagnostics" value="$(arg diagnostics)" />
           <arg name="imu_frame_id" value="$(arg imu_frame_id)" />
-          <arg name="filter_frame_id" value="$(arg filter_frame_id)" />
           <arg name="imu_data_rate" value="$(arg imu_data_rate)" />
           <arg name="filter_data_rate" value="$(arg filter_data_rate)" />
         </include>
@@ -164,7 +161,6 @@
       <param name="io_method" value="mmap" />
     </node> -->
 
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find yp_launch)/rviz/tsukutsuku.rviz" />
 
   </group>
 </launch>

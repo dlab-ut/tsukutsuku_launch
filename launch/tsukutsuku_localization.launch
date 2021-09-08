@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="input_sensor_points_topic" default="/sensing/velodyne_lower/rectified/pointcloud_ex" doc="Sensor points topic" />
+  <arg name="output_downsample_sensor_points_topic" default="downsample/pointcloud" doc="Sensor points topic"/>
+  <arg name="input_vehicle_twist_topic" default="/ypspur/twist" doc="" />
+  <arg name="input_imu_topic" default="/sensing/imu/gx5/nav/filtered_imu/data" doc="" />
+  <arg name="use_sim_time" default="false" />
+
+  <arg name="pointcloud_map_path" default="" doc="" />
+
+  <group if="$(arg use_sim_time)">
+    <param name="/use_sim_time" value="true" />
+  </group>
+
+  <group unless="$(arg use_sim_time)">
+    <include file="$(find yp_launch)/launch/data_collection.launch" />
+  </group>
+
+  <include file="$(find map_loader)/launch/pointcloud_map_loader.launch">
+    <arg name="pointcloud_map_path" default="$(arg pointcloud_map_path)" />
+  </include>
+
+  <include file="$(find localization_launch)/launch/localization.launch">
+    <arg name="input_sensor_points_topic" default="$(arg input_sensor_points_topic)" />
+    <arg name="input_vehicle_twist_topic" default="$(arg input_vehicle_twist_topic)" />
+    <arg name="input_imu_topic" default="$(arg input_imu_topic)" />
+    <arg name="output_downsample_sensor_points_topic" default="$(arg output_downsample_sensor_points_topic)" />
+  </include>
+
+  <group if="$(arg use_sim_time)">
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find yp_launch)/rviz/tsukutsuku.rviz" />
+  </group>
+
+</launch>
