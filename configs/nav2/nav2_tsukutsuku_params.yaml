@@ -51,7 +51,7 @@ controller_server:
     use_sim_time: True
     controller_frequency: 20.0
     min_x_velocity_threshold: 0.001
-    min_y_velocity_threshold: 0.5
+    min_y_velocity_threshold: 0.001
     min_theta_velocity_threshold: 0.001
     failure_tolerance: 0.3
     progress_checker_plugin: "progress_checker"
@@ -80,17 +80,17 @@ controller_server:
       debug_trajectory_details: True
       min_vel_x: 0.0
       min_vel_y: 0.0
-      max_vel_x: 1.0
-      max_vel_y: 0.0
-      max_vel_theta: 1.0
+      max_vel_x: 1.4
+      max_vel_y: 1.4
+      max_vel_theta: 1.57
       min_speed_xy: 0.0
       max_speed_xy: 1.0
       min_speed_theta: 0.0
       # Add high threshold velocity for turtlebot 3 issue.
       # https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/75
-      acc_lim_x: 2.5
+      acc_lim_x: 0.5
       acc_lim_y: 0.0
-      acc_lim_theta: 3.2
+      acc_lim_theta: 1.57
       decel_lim_x: -1.0
       decel_lim_y: 0.0
       decel_lim_theta: -1.0
@@ -105,17 +105,21 @@ controller_server:
       trans_stopped_velocity: 0.25
       short_circuit_trajectory_evaluation: True
       stateful: True
-      critics: ["RotateToGoal", "Oscillation", "BaseObstacle", "GoalAlign", "PathAlign", "PathDist", "GoalDist"]
-      BaseObstacle.scale: 0.02
+      critics: ["RotateToGoal", "Oscillation", "ObstacleFootprint", "BaseObstacle", "PathAlign", "PathDist", "GoalAlign", "GoalDist"]
+      BaseObstacle.scale: 3.0
+      BaseObstacle.sum_scores: false
+      ObstacleFootprint.scale: 3.0 
+      ObstacleFootprint.sum_scores: false
       PathAlign.scale: 32.0
-      PathAlign.forward_point_distance: 0.1
+      PathAlign.forward_point_distance: 1.0
       GoalAlign.scale: 24.0
-      GoalAlign.forward_point_distance: 0.1
+      GoalAlign.forward_point_distance: 1.0
       PathDist.scale: 32.0
-      GoalDist.scale: 24.0
-      RotateToGoal.scale: 32.0
+      GoalDist.scale: 12.0
+      RotateToGoal.scale: 24.0
       RotateToGoal.slowing_factor: 5.0
       RotateToGoal.lookahead_time: -1.0
+      # PreferForward.scale: 32.0
 
 controller_server_rclcpp_node:
   ros__parameters:
@@ -124,43 +128,101 @@ controller_server_rclcpp_node:
 local_costmap:
   local_costmap:
     ros__parameters:
-      update_frequency: 5.0
-      publish_frequency: 2.0
+      update_frequency: 10.0 #Hz
+      publish_frequency: 10.0 #Hz
       global_frame: odom
       robot_base_frame: base_link
       use_sim_time: True
       rolling_window: true
-      width: 3
-      height: 3
+      width: 10
+      height: 10
+      lethal_cost_threshold: 65
       resolution: 0.05
-      robot_radius: 0.4
-      plugins: ["voxel_layer", "inflation_layer"]
+      footprint: '[ [0.9, 0.33], [-0.2, 0.33], [-0.2, -0.33], [0.9, -0.33] ]'
+      footprint_padding: 0.03
+      # robot_radius: 0.9
+      plugins: ["inflation_layer", "stvl_layer", "obstacle_layer"]
+      stvl_layer:
+        plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer"
+        enabled: true
+        voxel_decay: 0.1
+        decay_model: 0
+        voxel_size: 0.05
+        track_unknown_space: true
+        max_obstacle_height: 1.5
+        unknown_threshold: 15 #what is?
+        mark_threshold: 0 #what is?
+        update_footprint_enabled: true
+        combination_method: 1
+        origin_z: 0.0
+        publish_voxel_map: true
+        transform_tolerance: 0.2
+        mapping_mode: false
+        map_save_duration: 60.0
+        observation_sources: velodyne
+        velodyne:
+          topic: /sensing/velodyne_lower/no_ground/pointcloud
+          marking: true
+          clearing: true
+          obstacle_range: 10.0
+          min_obstacle_height: 0.3
+          max_obstacle_height: 1.5
+          expected_update_rate: 10.0
+          observation_persistence: 0.0
+          inf_is_valid: false
+          voxel_filter: false
+          clear_after_reading: true
+          # max_z: 7.0
+          # min_z: 0.1
+          # vertical_fov_angle: 0.8745
+          # horizontal_fov_angle: 1.048
+          decay_acceleration: 15.0
+          model_type: 1
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        footprint_clearing_enabled: True
+        observation_sources: front_left_urg front_right_urg rear_urg 
+        front_left_urg:
+          topic: /sensing/front_left_urg/scan
+          max_obstacle_height: 1.5
+          clearing: True
+          marking: True
+          inf_is_valid: False
+          data_type: "LaserScan"
+          expected_update_rate: 40.0
+          raytrace_max_range: 10.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 10.0
+          obstacle_min_range: 0.0
+        front_right_urg:
+          topic: /sensing/front_right_urg/scan
+          max_obstacle_height: 1.5
+          clearing: True
+          marking: True
+          inf_is_valid: False
+          data_type: "LaserScan"
+          expected_update_rate: 40.0
+          raytrace_max_range: 10.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 10.0
+          obstacle_min_range: 0.0
+        rear_urg:
+          topic: /sensing/rear_urg/scan
+          max_obstacle_height: 1.5
+          clearing: True
+          marking: True
+          inf_is_valid: False
+          data_type: "LaserScan"
+          expected_update_rate: 40.0
+          raytrace_max_range: 10.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 10.0
+          obstacle_min_range: 0.0
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.55
-      voxel_layer:
-        plugin: "nav2_costmap_2d::VoxelLayer"
-        enabled: True
-        publish_voxel_map: True
-        origin_z: 0.0
-        z_resolution: 0.05
-        z_voxels: 16
-        max_obstacle_height: 2.0
-        mark_threshold: 0
-        observation_sources: scan
-        scan:
-          topic: /sensing/velodyne_lower/rectified/pointcloud
-          max_obstacle_height: 2.0
-          clearing: True
-          marking: True
-          data_type: "LaserScan"
-          raytrace_max_range: 3.0
-          raytrace_min_range: 0.0
-          obstacle_max_range: 2.5
-          obstacle_min_range: 0.0
-      static_layer:
-        map_subscribe_transient_local: True
+        inflation_radius: 0.4
       always_send_full_costmap: True
   local_costmap_client:
     ros__parameters:
@@ -172,37 +234,102 @@ local_costmap:
 global_costmap:
   global_costmap:
     ros__parameters:
-      update_frequency: 1.0
-      publish_frequency: 1.0
+      update_frequency: 3.0
+      publish_frequency: 3.0
       global_frame: map
       robot_base_frame: base_link
       use_sim_time: True
-      robot_radius: 0.22
-      resolution: 0.05
+      footprint: '[ [0.9, 0.33], [-0.2, 0.33], [-0.2, -0.33], [0.9, -0.33] ]'
+      footprint_padding: 0.03
+      # robot_radius: 0.9
+      resolution: 0.1
       track_unknown_space: true
-      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
-      obstacle_layer:
-        plugin: "nav2_costmap_2d::ObstacleLayer"
-        enabled: True
-        observation_sources: scan
-        scan:
-          topic: /sensing/velodyne_lower/rectified/pointcloud
-          max_obstacle_height: 2.0
-          clearing: True
-          marking: True
-          data_type: "LaserScan"
-          raytrace_max_range: 3.0
-          raytrace_min_range: 0.0
-          obstacle_max_range: 2.5
-          obstacle_min_range: 0.0
+      always_send_full_costmap: True
+      plugins: ["static_layer", "inflation_layer"]
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.55
-      always_send_full_costmap: True
+        inflation_radius: 0.2
+#      stvl_layer:
+#        plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer"
+#        enabled: true
+#        voxel_decay: 0.5
+#        decay_model: 0
+#        voxel_size: 0.05
+#        track_unknown_space: true
+#        max_obstacle_height: 1.5
+#        unknown_threshold: 15
+#        mark_threshold: 0
+#        update_footprint_enabled: true
+#        combination_method: 1
+#        origin_z: 0.0
+#        publish_voxel_map: true
+#        transform_tolerance: 0.2
+#        mapping_mode: false
+#        map_save_duration: 60.0
+#        observation_sources: velodyne
+#        velodyne:
+#          topic: /sensing/velodyne_lower/no_ground/pointcloud
+#          marking: true
+#          clearing: true
+#          obstacle_range: 40.0
+#          min_obstacle_height: 0.3
+#          max_obstacle_height: 1.5
+#          expected_update_rate: 10.0
+#          observation_persistence: 0.0
+#          inf_is_valid: false
+#          voxel_filter: false
+#          clear_after_reading: true
+#          # max_z: 7.0
+#          # min_z: 0.1
+#          # vertical_fov_angle: 0.8745
+#          # horizontal_fov_angle: 1.048
+#          decay_acceleration: 15.0
+#          model_type: 1
+      obstacle_layer:
+        plugin: "nav2_costmap_2d::ObstacleLayer"
+        enabled: True
+        footprint_clearing_enabled: True
+        observation_sources: front_left_urg front_right_urg rear_urg 
+        front_left_urg:
+          topic: /sensing/front_left_urg/scan
+          max_obstacle_height: 1.5
+          clearing: True
+          marking: True
+          inf_is_valid: False
+          data_type: "LaserScan"
+          expected_update_rate: 40.0
+          raytrace_max_range: 30.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 30.0
+          obstacle_min_range: 0.0
+        front_right_urg:
+          topic: /sensing/front_right_urg/scan
+          max_obstacle_height: 1.5
+          clearing: True
+          marking: True
+          inf_is_valid: False
+          data_type: "LaserScan"
+          expected_update_rate: 40.0
+          raytrace_max_range: 30.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 30.0
+          obstacle_min_range: 0.0
+        rear_urg:
+          topic: /sensing/rear_urg/scan
+          max_obstacle_height: 1.5
+          clearing: True
+          marking: True
+          inf_is_valid: False
+          data_type: "LaserScan"
+          expected_update_rate: 40.0
+          raytrace_max_range: 30.0
+          raytrace_min_range: 0.0
+          obstacle_max_range: 30.0
+          obstacle_min_range: 0.0
   global_costmap_client:
     ros__parameters:
       use_sim_time: True
@@ -230,7 +357,7 @@ planner_server:
     planner_plugins: ["GridBased"]
     GridBased:
       plugin: "nav2_navfn_planner/NavfnPlanner"
-      tolerance: 0.5
+      tolerance: 1.0
       use_astar: false
       allow_unknown: true
 
@@ -257,7 +384,7 @@ recoveries_server:
     simulate_ahead_time: 2.0
     max_rotational_vel: 1.0
     min_rotational_vel: 0.4
-    rotational_acc_lim: 3.2
+    rotational_acc_lim: 3.14
 
 robot_state_publisher:
   ros__parameters:
