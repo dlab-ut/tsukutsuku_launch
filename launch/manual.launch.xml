@@ -5,9 +5,10 @@
         <arg name="robot_model" default="tsukutsuku" />
         <arg name="model" default="$(find-pkg-share yp_robot_config)/urdf/tsukutsuku.urdf.xacro" />
         <arg name="launch_driver" default="true" />
-        <arg name="map_path" default="/home/tsukutsuku/data/maps/sb" />
+        <arg name="map_path" default="/home/tsukutsuku/data/maps/tc" />
         <arg name="pointcloud_map_path" default="$(var map_path)/pointcloud_map.pcd" />
         <arg name="pointcloud_map_file" default="pointcloud_map.pcd" />
+        <arg name="ypspur_ros2_bridge_params_file" default="$(find-pkg-share ypspur_ros2_bridge)/config/$(var robot_model)/ypspur_ros2_bridge_params.yaml" />
 
         <!-- global parameter -->
         <include file="$(find-pkg-share autoware_global_parameter_loader)/launch/global_params.launch.py">
@@ -32,8 +33,8 @@
         <include file="$(find-pkg-share teleop_twist_joy)/launch/teleop-launch.py" />
         <group>
                 <push-ros-namespace namespace="ypspur" />
-                <include file="$(find-pkg-share ypspur_ros_bridge)/launch/ypspur_ros_bridge.launch.xml">
-                        <arg name="robot_model" value="$(var robot_model)" />
+                <include file="$(find-pkg-share ypspur_ros2_bridge)/launch/ypspur_ros2_bridge.launch.py">
+                        <arg name="params_file" value="$(var ypspur_ros2_bridge_params_file)" />
                 </include>
         </group>
 
