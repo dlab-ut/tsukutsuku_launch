@@ -3,12 +3,14 @@
         <arg name="use_sim_time" default="false" />
         <arg name="rviz" default="true"/>
         <arg name="robot_model" default="tsukutsuku" />
+        <arg name="place" default="sb" />
         <arg name="model" default="$(find-pkg-share yp_robot_config)/urdf/$(var robot_model).urdf.xacro" />
         <arg name="autostart" default="false" />
-        <arg name="map_path" default="/home/tsukutsuku/data/maps/sb" />
+        <arg name="map_path" default="/home/tsukutsuku/data/maps/$(var place)" />
         <arg name="pointcloud_map_file" default="pointcloud_map.pcd" />
-        <arg name="pointcloud_map_path" default="$(var map_path)/$(var pointcloud_map_file)" />
-        <arg name="map" default="/home/tsukutsuku/data/maps/sb/map.yaml" />
+        <arg name="pointcloud_map_path" default="$(var map_path)/pcd/$(var pointcloud_map_file)" />
+        <arg name="ogm_file" default="map.yaml" />
+        <arg name="ogm_path" default="$(var map_path)/ogm/$(var ogm_file)" />
         <arg name="nav2_params_file" default="$(find-pkg-share tsukutsuku_launch)/configs/nav2/nav2_$(var robot_model)_params.yaml" />
         <arg name="ypspur_ros2_bridge_params_file" default="$(find-pkg-share ypspur_ros2_bridge)/config/$(var robot_model)/ypspur_ros2_bridge_params.yaml" />
 
@@ -51,7 +53,7 @@
         <include file="$(find-pkg-share nav2_bringup)/launch/bringup_launch.py">
                 <arg name="use_sim_time" value="$(var use_sim_time)" />
                 <arg name="autostart" value="$(var autostart)" />
-                <arg name="map" value="$(var map)" />
+                <arg name="map" value="$(var ogm_path)" />
                 <arg name="params_file" value="$(var nav2_params_file)" />
         </include>
 

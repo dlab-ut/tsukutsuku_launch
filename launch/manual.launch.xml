@@ -3,11 +3,12 @@
         <arg name="use_sim_time" default="false" />
         <arg name="rviz" default="true" />
         <arg name="robot_model" default="tsukutsuku" />
+        <arg name="place" default="sb" />
         <arg name="model" default="$(find-pkg-share yp_robot_config)/urdf/tsukutsuku.urdf.xacro" />
         <arg name="launch_driver" default="true" />
-        <arg name="map_path" default="/home/tsukutsuku/data/maps/tc" />
-        <arg name="pointcloud_map_path" default="$(var map_path)/pointcloud_map.pcd" />
+        <arg name="map_path" default="/home/tsukutsuku/data/maps/$(var place)" />
         <arg name="pointcloud_map_file" default="pointcloud_map.pcd" />
+        <arg name="pointcloud_map_path" default="$(var map_path)/$(var pointcloud_map_file)" />
         <arg name="ypspur_ros2_bridge_params_file" default="$(find-pkg-share ypspur_ros2_bridge)/config/$(var robot_model)/ypspur_ros2_bridge_params.yaml" />
 
         <!-- global parameter -->
@@ -39,10 +40,10 @@
         </group>
 
         <!-- sensing -->
-        <group>
+        <!-- <group>
                 <push-ros-namespace namespace="sensing" />
                 <include file="$(find-pkg-share yp_launch)/launch/tsukutsuku/sensing.launch.xml" />
-        </group>
+        </group> -->
 
         <!-- localization -->
         <!-- <include file="$(find-pkg-share tsukutsuku_launch)/launch/tsukutsuku_localization.launch.xml" /> -->
