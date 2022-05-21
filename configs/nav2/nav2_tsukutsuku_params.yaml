@@ -72,8 +72,8 @@ controller_server:
     general_goal_checker:
       stateful: True
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.25
-      yaw_goal_tolerance: 0.25
+      xy_goal_tolerance: 0.5
+      yaw_goal_tolerance: 0.75
     # DWB parameters
     FollowPath:
       plugin: "dwb_core::DWBLocalPlanner"
@@ -82,7 +82,7 @@ controller_server:
       min_vel_y: 0.0
       max_vel_x: 1.4
       max_vel_y: 1.4
-      max_vel_theta: 1.57
+      max_vel_theta: 0.5
       min_speed_xy: 0.0
       max_speed_xy: 1.0
       min_speed_theta: 0.0
@@ -90,7 +90,7 @@ controller_server:
       # https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/75
       acc_lim_x: 0.5
       acc_lim_y: 0.0
-      acc_lim_theta: 1.57
+      acc_lim_theta: 1.0
       decel_lim_x: -1.0
       decel_lim_y: 0.0
       decel_lim_theta: -1.0
@@ -105,17 +105,17 @@ controller_server:
       trans_stopped_velocity: 0.25
       short_circuit_trajectory_evaluation: True
       stateful: True
-      critics: ["RotateToGoal", "Oscillation", "ObstacleFootprint", "BaseObstacle", "PathAlign", "PathDist", "GoalAlign", "GoalDist"]
-      BaseObstacle.scale: 3.0
+      critics: ["RotateToGoal", "Oscillation", "ObstacleFootprint", "PathAlign", "PathDist", "GoalAlign", "GoalDist"]
+      BaseObstacle.scale: 0.01
       BaseObstacle.sum_scores: false
-      ObstacleFootprint.scale: 3.0 
+      ObstacleFootprint.scale: 0.005 
       ObstacleFootprint.sum_scores: false
-      PathAlign.scale: 32.0
-      PathAlign.forward_point_distance: 1.0
+      PathAlign.scale: 12.0
+      PathAlign.forward_point_distance: 0.1
       GoalAlign.scale: 24.0
-      GoalAlign.forward_point_distance: 1.0
+      GoalAlign.forward_point_distance: 0.1
       PathDist.scale: 32.0
-      GoalDist.scale: 12.0
+      GoalDist.scale: 24.0
       RotateToGoal.scale: 24.0
       RotateToGoal.slowing_factor: 5.0
       RotateToGoal.lookahead_time: -1.0
@@ -145,7 +145,7 @@ local_costmap:
       stvl_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer"
         enabled: true
-        voxel_decay: 0.1
+        voxel_decay: 0.2
         decay_model: 0
         voxel_size: 0.05
         track_unknown_space: true
@@ -182,7 +182,7 @@ local_costmap:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
         footprint_clearing_enabled: True
-        observation_sources: front_left_urg front_right_urg rear_urg 
+        observation_sources: front_left_urg rear_urg 
         front_left_urg:
           topic: /sensing/front_left_urg/scan
           max_obstacle_height: 1.5
@@ -242,7 +242,7 @@ global_costmap:
       footprint: '[ [0.9, 0.33], [-0.2, 0.33], [-0.2, -0.33], [0.9, -0.33] ]'
       footprint_padding: 0.03
       # robot_radius: 0.9
-      resolution: 0.1
+      resolution: 0.3
       track_unknown_space: true
       always_send_full_costmap: True
       plugins: ["static_layer", "inflation_layer"]
