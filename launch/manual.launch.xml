@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
         <arg name="use_sim_time" default="false" />
+        <arg name="logging" default="false" description="logging flag" />
+        <arg name="localization" default="false" />
+        <arg name="sensing" default="false" />
         <arg name="rviz" default="true" />
         <arg name="robot_model" default="tsukutsuku" />
         <arg name="place" default="sb" />
@@ -42,12 +45,13 @@
         <!-- sensing -->
         <group>
                 <push-ros-namespace namespace="sensing" />
-                <include file="$(find-pkg-share yp_launch)/launch/tsukutsuku/sensing.launch.xml" />
+                <include file="$(find-pkg-share yp_launch)/launch/tsukutsuku/sensing.launch.xml" if="$(var sensing)" />
         </group>
 
         <!-- localization -->
-        <!-- <include file="$(find-pkg-share tsukutsuku_launch)/launch/tsukutsuku_localization.launch.xml" /> -->
-
+        <include file="$(find-pkg-share tsukutsuku_launch)/launch/tsukutsuku_localization.launch.xml" if="$(var localization)">
+                <arg name="logging" value="$(var logging)" />
+        </include>
 
         <node pkg="rviz2" exec="rviz2" name="rviz2" output="screen" args="-d $(find-pkg-share tsukutsuku_launch)/rviz/tsukutsuku.rviz" if="$(var rviz)" />
 
