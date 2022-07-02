@@ -5,13 +5,14 @@
   <arg name="output_downsample_sensor_points_topic" default="downsampled/pointcloud" />
   <arg name="input_vehicle_twist_topic" default="/ypspur/twist" />
   <arg name="input_imu_topic" default="/sensing/microstrain_imu/gx5/nav/filtered_imu/data" />
-
+  <arg name="logging" default="false" description="logging flag" />
 
   <include file="$(find-pkg-share localization_launch)/launch/localization.launch.xml">
     <arg name="input_sensor_points_topic" value="$(var input_sensor_points_topic)" />
     <arg name="input_vehicle_twist_topic" value="$(var input_vehicle_twist_topic)" />
     <arg name="input_imu_topic" value="$(var input_imu_topic)" />
     <arg name="output_downsample_sensor_points_topic" value="$(var output_downsample_sensor_points_topic)" />
+    <arg name="logging" value="$(var logging)" />
   </include>
 
 </launch>
