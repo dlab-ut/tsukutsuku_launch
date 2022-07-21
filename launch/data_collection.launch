@@ -144,7 +144,7 @@
     </group>
 
     <node name="center_usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
-      <param name="video_device" value="/dev/v4l/by-path/pci-0000:03:00.0-usb-0:2.1:1.0-video-index0" />
+      <param name="video_device" value="/dev/v4l/by-path/pci-0000:03:00.0-usb-0:2.3:1.0-video-index0" />
       <param name="image_width" value="1920" />
       <param name="image_height" value="1080" />
       <param name="pixel_format" value="yuyv" />
@@ -153,7 +153,7 @@
     </node>
 
     <node name="left_usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
-      <param name="video_device" value="/dev/v4l/by-id/usb-046d_HD_Pro_Webcam_C920_FE705E1F-video-index0" />
+      <param name="video_device" value="/dev/v4l/by-path/pci-0000:00:14.0-usb-0:8:1.0-video-index0" />
       <param name="image_width" value="1920" />
       <param name="image_height" value="1080" />
       <param name="pixel_format" value="yuyv" />
@@ -162,7 +162,7 @@
     </node>
 
     <node name="right_usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
-      <param name="video_device" value="/dev/video2" />
+      <param name="video_device" value="/dev/v4l/by-path/pci-0000:00:14.0-usb-0:10:1.0-video-index0" />
       <param name="image_width" value="1920" />
       <param name="image_height" value="1080" />
       <param name="pixel_format" value="yuyv" />
