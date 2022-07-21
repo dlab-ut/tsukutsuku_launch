@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find yp_launch)/launch/lio_data_collection.launch" />
+    <include file="$(find lio_sam)/launch/run.launch"/>
+</launch>

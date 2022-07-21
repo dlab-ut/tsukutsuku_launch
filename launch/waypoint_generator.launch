@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="use_sim_time" default="false" />
+    <arg name="pointcloud_map_path" default="" doc="" />
+    <arg name="input_odom_topic" default="/localization/pose_twist_fusion_filter/pose_with_covariance" />
+    <arg name="output_waypoint_topic" default="/waypoints" />
+
+    <arg name="dist_th" default="3.0" doc="" />
+    <arg name="yaw_th" default="0.785" doc="" />
+
+
+    <include file="$(find yp_launch)/launch/tsukutsuku_localization.launch">
+        <arg name="use_sim_time" default="$(arg use_sim_time)" />
+        <arg name="pointcloud_map_path" default="$(arg pointcloud_map_path)" />
+    </include>
+
+    <node name="cirkit_waypoint_generator" pkg="cirkit_waypoint_generator" type="cirkit_waypoint_generator" >
+        <param name="dist_th" value="$(arg dist_th)" />
+        <param name="yaw_th" value="$(arg yaw_th)" />
+        <remap from="/input/odom" to="$(arg input_odom_topic)" />
+        <remap from="/waypoints" to="$(arg output_waypoint_topic)" />
+    /</node>
+</launch>
