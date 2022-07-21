@@ -12,27 +12,29 @@
   <arg name="velodyne_upper_port" default="2369" />
   <arg name="velodyne_lower_port" default="2368" />
 
-  <arg name="front_left_urg_port"             default = "/dev/serial/by-path/pci-0000:04:00.0-usb-0:3:1.0" />
-  <arg name="front_left_urg_frame_id"             default = "laser_front_left" />
-  <arg name="front_right_urg_port"             default = "/dev/v4l/by-path/pci-0000:03:00.0-usb-0:2.2:1.0-video-index0" />
-  <arg name="front_right_urg_frame_id"             default = "laser_front_right" />
-  <arg name="rear_urg_port"             default = "/dev/serial/by-path/pci-0000:04:00.0-usb-0:4:1.0" />
-  <arg name="rear_urg_frame_id"             default = "laser_rear" />
+  <arg name="front_left_urg_port" default="/dev/serial/by-path/pci-0000:04:00.0-usb-0:3:1.0" />
+  <arg name="front_left_urg_frame_id" default="laser_front_left" />
+  <arg name="front_right_urg_port" default="/dev/v4l/by-path/pci-0000:03:00.0-usb-0:2.2:1.0-video-index0" />
+  <arg name="front_right_urg_frame_id" default="laser_front_right" />
+  <arg name="rear_urg_port" default="/dev/serial/by-path/pci-0000:04:00.0-usb-0:4:1.0" />
+  <arg name="rear_urg_frame_id" default="laser_rear" />
 
-  <arg name="left_point_grey_port"             default = "0" />
-  <arg name="left_point_grey_frame_id"             default = "left_camera" />
-  <arg name="right_point_grey_port"             default = "1" />
-  <arg name="right_point_grey_frame_id"             default = "right_camera" />
+  <arg name="left_point_grey_port" default="0" />
+  <arg name="left_point_grey_frame_id" default="left_camera" />
+  <arg name="right_point_grey_port" default="1" />
+  <arg name="right_point_grey_frame_id" default="right_camera" />
 
-  <arg name="imu_name"             default = "gx5" />
-  <arg name="imu_port"             default = "/dev/serial/by-id/usb-Lord_Microstrain_Lord_Inertial_Sensor_0000_6253.117494-if00" />
-  <arg name="baudrate"         default = "115200" />
-  <arg name="debug"            default = "false" />
-  <arg name="diagnostics"      default = "true" />  
-  <arg name="imu_frame_id"     default = "imu_link" />
-  <arg name="filter_frame_id"  default = "imu_link" />
-  <arg name="imu_data_rate"    default = "300" />
-  <arg name="filter_data_rate" default = "10" />
+  <arg name="imu_name" default="gx5" />
+  <arg name="imu_port" default="/dev/serial/by-id/usb-Lord_Microstrain_Lord_Inertial_Sensor_0000_6253.117494-if00" />
+  <arg name="baudrate" default="115200" />
+  <arg name="debug" default="false" />
+  <arg name="diagnostics" default="true" />
+  <arg name="imu_frame_id" default="imu_link" />
+  <arg name="filter_frame_id" default="imu_link" />
+  <arg name="imu_data_rate" default="300" />
+  <arg name="filter_data_rate" default="10" />
+
+  <arg name="joy_config_filepath" default="$(find yp_launch)/config/joy/lineage_2.config.yaml" />
 
   <group ns="vehicle_info">
     <rosparam command="load" file="$(find yp_robot_config)/config/tsukutsuku/vehicle_info.yaml" />
@@ -46,8 +48,10 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
   <group ns="ypspur">
-    <include file="$(find teleop_twist_joy)/launch/teleop.launch" />  
-    <include file="$(find ypspur_ros_bridge)/launch/ypspur_ros_bridge.launch" />  
+    <include file="$(find teleop_twist_joy)/launch/teleop.launch">
+      <arg name="config_filepath" default="$(arg joy_config_filepath)" />
+    </include>
+    <include file="$(find ypspur_ros_bridge)/launch/ypspur_ros_bridge.launch" />
   </group>
 
   <group ns="sensing">
@@ -125,20 +129,20 @@
         </include>
       </group> -->
 
-      <group ns="imu">
-        <include file="$(find ros_mscl)/launch/microstrain.launch">
-          <arg name="name" value="$(arg imu_name)" />
-          <arg name="port" value="$(arg imu_port)" />
-          <arg name="baudrate" value="$(arg baudrate)" />
-          <arg name="debug" value="$(arg debug)" />
-          <arg name="diagnostics" value="$(arg diagnostics)" />
-          <arg name="imu_frame_id" value="$(arg imu_frame_id)" />
-          <arg name="filter_frame_id" value="$(arg filter_frame_id)" />
-          <arg name="imu_data_rate" value="$(arg imu_data_rate)" />
-          <arg name="filter_data_rate" value="$(arg filter_data_rate)" />
-        </include>
-      </group>
-    
+    <group ns="imu">
+      <include file="$(find ros_mscl)/launch/microstrain.launch">
+        <arg name="name" value="$(arg imu_name)" />
+        <arg name="port" value="$(arg imu_port)" />
+        <arg name="baudrate" value="$(arg baudrate)" />
+        <arg name="debug" value="$(arg debug)" />
+        <arg name="diagnostics" value="$(arg diagnostics)" />
+        <arg name="imu_frame_id" value="$(arg imu_frame_id)" />
+        <arg name="filter_frame_id" value="$(arg filter_frame_id)" />
+        <arg name="imu_data_rate" value="$(arg imu_data_rate)" />
+        <arg name="filter_data_rate" value="$(arg filter_data_rate)" />
+      </include>
+    </group>
+
     <node name="center_usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
       <param name="video_device" value="/dev/v4l/by-path/pci-0000:03:00.0-usb-0:2.1:1.0-video-index0" />
       <param name="image_width" value="1920" />
@@ -148,7 +152,7 @@
       <param name="io_method" value="mmap" />
     </node>
 
-    <!-- <node name="left_usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
+    <node name="left_usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen">
       <param name="video_device" value="/dev/v4l/by-id/usb-046d_HD_Pro_Webcam_C920_FE705E1F-video-index0" />
       <param name="image_width" value="1920" />
       <param name="image_height" value="1080" />
@@ -164,7 +168,7 @@
       <param name="pixel_format" value="yuyv" />
       <param name="camera_frame_id" value="right_camera" />
       <param name="io_method" value="mmap" />
-    </node> -->
+    </node>
 
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find yp_launch)/rviz/tsukutsuku.rviz" />
 

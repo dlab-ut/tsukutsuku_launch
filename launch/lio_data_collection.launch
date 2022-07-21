@@ -33,6 +33,8 @@
   <arg name="imu_data_rate" default="500" />
   <arg name="filter_data_rate" default="500" />
 
+  <arg name="joy_config_filepath" default="$(find yp_launch)/config/joy/lineage_2.config.yaml" />
+
   <group ns="vehicle_info">
     <rosparam command="load" file="$(find yp_robot_config)/config/tsukutsuku/vehicle_info.yaml" />
     <node name="additional_vehicle_info_generator" pkg="additional_vehicle_info_generator" type="additional_vehicle_info_generator" output="log" />
@@ -45,7 +47,9 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
   <group ns="ypspur">
-    <include file="$(find teleop_twist_joy)/launch/teleop.launch" />
+    <include file="$(find teleop_twist_joy)/launch/teleop.launch">
+      <arg name="config_filepath" default="$(arg joy_config_filepath)" />
+    </include>
     <include file="$(find ypspur_ros_bridge)/launch/ypspur_ros_bridge.launch" />
   </group>
 
