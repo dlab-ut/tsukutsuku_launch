@@ -3,7 +3,7 @@
     angle_max: 3.14
     angle_min: -3.14
     ip_port: 10940
-    serial_port: "/dev/serial/by-path/pci-0000:03:00.0-usb-0:3:1.0"
+    serial_port: "/dev/serial/by-path/pci-0000:03:00.0-usb-0:2.1:1.0"
     serial_baud: 115200
     laser_frame_id: "laser_front_left"
     calibrate_time: false

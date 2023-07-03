@@ -13,6 +13,8 @@
         <arg name="pointcloud_map_file" default="pointcloud_map.pcd" />
         <arg name="pointcloud_map_path" default="$(var map_path)/pcd/$(var pointcloud_map_file)" />
         <arg name="ypspur_ros2_bridge_params_file" default="$(find-pkg-share ypspur_ros2_bridge)/config/$(var robot_model)/ypspur_ros2_bridge_params.yaml" />
+        <arg name="frame_id" default="odom" />
+        <arg name="child_frame_id" default="base_link" />
 
         <!-- global parameter -->
         <include file="$(find-pkg-share autoware_global_parameter_loader)/launch/global_params.launch.py">
@@ -40,6 +42,10 @@
                 <include file="$(find-pkg-share ypspur_ros2_bridge)/launch/ypspur_ros2_bridge.launch.py">
                         <arg name="params_file" value="$(var ypspur_ros2_bridge_params_file)" />
                 </include>
+                <node name="odom_tf_generator" pkg="odom_tf_generator" exec="odom_tf_generator">
+                        <param name="frame_id" value="$(var frame_id)" />
+                        <param name="child_frame_id" value="$(var child_frame_id)" />
+                </node>
         </group>
 
         <!-- sensing -->

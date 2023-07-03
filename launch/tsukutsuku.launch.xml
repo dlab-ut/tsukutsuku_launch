@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
         <arg name="use_sim_time" default="false" />
-        <arg name="logging" default="false" description="logging flag" />
+        <arg name="logging" default="false"/>
         <arg name="rviz" default="true" />
         <arg name="robot_model" default="tsukutsuku" />
         <arg name="place" default="sb" />
@@ -14,6 +14,8 @@
         <arg name="ogm_path" default="$(var map_path)/ogm/$(var ogm_file)" />
         <arg name="nav2_params_file" default="$(find-pkg-share tsukutsuku_launch)/configs/nav2/nav2_$(var robot_model)_params.yaml" />
         <arg name="ypspur_ros2_bridge_params_file" default="$(find-pkg-share ypspur_ros2_bridge)/config/$(var robot_model)/ypspur_ros2_bridge_params.yaml" />
+        <arg name="frame_id" default="odom" />
+        <arg name="child_frame_id" default="base_link" />
 
         <!-- global parameter -->
         <include file="$(find-pkg-share autoware_global_parameter_loader)/launch/global_params.launch.py">
@@ -40,6 +42,10 @@
                 <include file="$(find-pkg-share ypspur_ros2_bridge)/launch/ypspur_ros2_bridge.launch.py">
                         <arg name="params_file" value="$(var ypspur_ros2_bridge_params_file)" />
                 </include>
+                <node name="odom_tf_generator" pkg="odom_tf_generator" exec="odom_tf_generator">
+                        <param name="frame_id" value="$(var frame_id)" />
+                        <param name="child_frame_id" value="$(var child_frame_id)" />
+                </node>                
         </group>
         <!-- sensing -->
         <group>
@@ -55,10 +61,15 @@
         <!-- navigation -->
         <include file="$(find-pkg-share nav2_bringup)/launch/bringup_launch.py">
                 <arg name="use_sim_time" value="$(var use_sim_time)" />
+                <!-- <arg name="use_namespace" value="true" /> -->
+                <!-- <arg name="namespace" value="nav2" /> -->
                 <arg name="autostart" value="$(var autostart)" />
                 <arg name="map" value="$(var ogm_path)" />
                 <arg name="params_file" value="$(var nav2_params_file)" />
         </include>
+        <include file="$(find-pkg-share inputatwaypoint_sender)/launch/joyctrl.launch.py"/>
+
+        <include file="$(find-pkg-share mno_pede_detector)/launch/mno_pede_detector.launch.xml"/>
 
         <!-- rviz -->
         <node pkg="rviz2" exec="rviz2" name="rviz2" output="screen" args="-d $(find-pkg-share tsukutsuku_launch)/rviz/tsukutsuku.rviz" if="$(var rviz)" />
